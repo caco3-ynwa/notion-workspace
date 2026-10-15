@@ -1,0 +1,22 @@
+from notion_workspace.notion import client
+
+notion_client = client.notion_client
+def notion_datasource_oper_builder(notion_client):
+    def notion_datasource_oper(datasource_id:str):
+        return notion_client.databases.retrieve(database_id=datasource_id)
+    return notion_datasource_oper
+
+
+def notion_database_oper(datasource_id:str):
+    def page_createor(page):
+        return create_page(notion_client,datasource_id,page)
+    return page_createor
+
+
+
+def create_page(client,datasource_id:str,page:str):
+    print (f"Creating page: {page}")
+    return (datasource_id, page)
+
+print(notion_database_oper("caco3")("caco4"))
+
