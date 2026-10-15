@@ -56,4 +56,4 @@ def create_dota_record(record: DotaRecord):
 
 
 if __name__ == "__main__":
-    print(record_SCHEMA.to_notion_schema())
+    print(MATCH_SCHEMA.to_notion_schema())
