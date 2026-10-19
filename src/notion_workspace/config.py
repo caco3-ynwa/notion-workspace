@@ -1,19 +1,25 @@
+import argparse
 import os
-import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
 
-if getattr(sys, "frozen", False):
-    # 打包后：可执行文件所在目录
-    base_dir = Path(sys.executable).resolve().parent
-else:
-    # 开发时：项目根目录
-    base_dir = Path(__file__).resolve().parents[2]
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    "--env-file",
+    required=True,
+    help=".env 文件路径",
+)
+args = parser.parse_args()
 
-load_dotenv(base_dir / ".env", override=False)
+env_file = Path(args.env_file).expanduser().resolve()
+
+if not env_file.is_file():
+    parser.error(f"配置文件不存在：{env_file}")
+
+load_dotenv(env_file, override=False)
 
 NOTION_TOKEN = os.getenv("NOTION_TOKEN")
 
 if not NOTION_TOKEN:
-    raise RuntimeError("请在 .env 或环境变量中配置 NOTION_TOKEN")
+    parser.error("请在配置文件或环境变量中设置 NOTION_TOKEN")
