@@ -1,28 +1,29 @@
-from notion_workspace.dota import opendota
-from notion_workspace.notion.dota_record import MATCH_SCHEMA
-from notion_workspace.notion.notion_database import NotionDatabase
+import logging
+from pathlib import Path
 
+from notion_workspace.tasks import task_management
+
+Path("logs").mkdir(exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(
+            "logs/sync.log",
+            encoding="utf-8",
+        ),
+    ],
+)
+
+
+logger = logging.getLogger(__name__)
 
 def main():
-    limit = 5
-    data_source_id="38ebd80b-3ee0-80f1-8e99-000bcc29e8a4"
-    notion = NotionDatabase(
-        data_source_id=data_source_id,
-    )
+    logger.info("start notion workspace")
+    task_management.run_tasks()
 
-    matches = opendota.recent_matches(opendota.account_id,limit)
-
-    for match in matches:
-        print(match)
-        if notion.existsTitle("MatchId", str(match.match_id)):
-            print(f"Skipped: {match.match_id}")
-            continue
-
-        properties = MATCH_SCHEMA.encode_object(match)
-
-        notion.create(properties)
-
-        print(f"Created: {match.match_id}")
 
 
 
