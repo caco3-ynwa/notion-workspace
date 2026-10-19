@@ -1,2 +1,5 @@
 .env
-logs
+/logs/
+/build/
+/dist/
+notion-sync.spec
