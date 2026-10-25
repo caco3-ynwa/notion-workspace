@@ -2,56 +2,62 @@ import argparse
 import logging
 from pathlib import Path
 
-from notion_workspace.notion import data_sync
-from notion_workspace.config import LOG_FILE
-from notion_workspace.tasks import task_management
-
-log_file = Path(LOG_FILE).expanduser()
-log_file.parent.mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    handlers=[
-        logging.StreamHandler(),
-        logging.FileHandler(log_file, encoding="utf-8"),
-    ],
-    force=True,
-)
-
-logger = logging.getLogger(__name__)
-parser = argparse.ArgumentParser(description="Notion 同步程序")
-parser.add_argument(
-    "--schedule",
-    action="store_true",
-    help="开启定时任务模式",
-)
-parser.add_argument(
-    "--data-sync",
-    type=str,
-    help="执行指定的任务",
-)
-
+from notion_workspace import config
 
 
 def main():
-    logger.info("start notion workspace")
-    if parser.parse_args().schedule:
-        logger.info("Running in schedule mode...")
+    parser = argparse.ArgumentParser(description="Notion 同步程序")
+
+    parser.add_argument(
+        "--env-file",
+        required=True,
+        help=".env 文件路径",
+    )
+
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument(
+        "--schedule",
+        action="store_true",
+        help="开启定时任务模式",
+    )
+    mode.add_argument(
+        "--data-sync",
+        choices=["sync_dota_records"],
+        help="立即执行指定任务",
+    )
+
+    args = parser.parse_args()
+
+    try:
+        config.load_config(args.env_file)
+    except ValueError as exc:
+        parser.error(str(exc))
+
+    log_file = Path(config.LOG_FILE).expanduser()
+    log_file.parent.mkdir(parents=True, exist_ok=True)
+
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler(log_file, encoding="utf-8"),
+        ],
+        force=True,
+    )
+
+    logger = logging.getLogger(__name__)
+    logger.info("启动 Notion 同步程序")
+
+    # 必须在加载配置之后导入，业务模块会初始化 Notion 客户端
+    if args.schedule:
+        from notion_workspace.tasks import task_management
+
         task_management.run_tasks()
-        return
+    else:
+        from notion_workspace.notion import data_sync
 
-    if parser.parse_args().data_sync:
-        task_name = parser.parse_args().data_sync
-        if task_name == "sync_dota_records":
-            logger.info("Running sync_dota_records task...")
-            data_sync.sync_dota_records(limit=10)
-        else:
-            logger.error(f"Unknown task: {task_name}")
-
-
-
-
+        data_sync.sync_dota_records(limit=10)
 
 
 if __name__ == "__main__":
