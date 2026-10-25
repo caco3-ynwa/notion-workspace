@@ -2,4 +2,5 @@
 /logs/
 /build/
 /dist/
+/.vscode/
 notion-sync.spec
