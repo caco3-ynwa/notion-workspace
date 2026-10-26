@@ -10,8 +10,8 @@ def main():
 
     parser.add_argument(
         "--env-file",
-        required=True,
-        help=".env 文件路径",
+        default=None,
+        help=".env 文件路径，默认读取仓库根目录（打包后为可执行文件旁）的 .env",
     )
 
     mode = parser.add_mutually_exclusive_group(required=True)

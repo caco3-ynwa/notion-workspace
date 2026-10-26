@@ -1,10 +1,5 @@
-source /root/miniconda-24/etc/profile.d/conda.sh
-conda activate notion
-
-python -m PyInstaller --noconfirm --onefile --name notion-sync \
-  --paths ./src \
-  --add-data "./src/notion_workspace/dota/dict/heroes.csv:notion_workspace/dota/dict" \
-  --collect-data tzdata \
-  ./src/notion_workspace/main.py
-
-install -m 755 ./dist/notion-sync /usr/local/bin/notion-sync
+#!/usr/bin/env bash
+set -euo pipefail
+PROJECT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+bash "$PROJECT_DIR/scripts/build_python.sh"
+install -m 755 "$PROJECT_DIR/dist/python/notion-sync" /usr/local/bin/notion-sync

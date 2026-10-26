@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "notion-workspace"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "notion-client>=2.5,<3",
+    "httpx",
+    "python-dotenv",
+    "requests",
+    "numpy>=1.26.4,<2; python_version < '3.13'",
+    "pandas==2.2.3; python_version < '3.14'",
+    "pandas>=2.3,<4; python_version >= '3.14'",
+    "apscheduler>=3.11,<4",
+    "tzdata",
+]
+
+[project.optional-dependencies]
+build = ["pyinstaller>=6,<7"]
+
+[project.scripts]
+notion-sync = "notion_workspace.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+notion_workspace = ["dota/dict/*.csv"]

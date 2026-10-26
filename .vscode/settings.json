@@ -2,5 +2,16 @@
     "python-envs.defaultEnvManager": "ms-python.python:conda",
     "python-envs.defaultPackageManager": "ms-python.python:conda",
     "git.mergeEditor": true,
-    "python.terminal.useEnvFile": true
+    "python.terminal.useEnvFile": true,
+    "python.envFile": "${workspaceFolder}/.env",
+    "python.analysis.extraPaths": ["${workspaceFolder}/python/src"],
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}/python/src"
+    },
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}/python/src"
+    },
+    "gopls": {
+        "expandWorkspaceToModule": true
+    }
 }
